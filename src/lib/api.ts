@@ -47,8 +47,22 @@ export async function registerWithEmail(
 }
 
 export async function loginWithGoogle() {
-  // TODO: substituir pelo fluxo OAuth real (ex.: NextAuth/Google Identity Services)
-  return delay({ user: currentUser, token: "mock-token" });
+  const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
+  const redirectUri = process.env.NEXT_PUBLIC_GOOGLE_REDIRECT_URI;
+
+  if (!clientId || !redirectUri) {
+    throw new Error(
+      "Configure NEXT_PUBLIC_GOOGLE_CLIENT_ID e NEXT_PUBLIC_GOOGLE_REDIRECT_URI no .env.local e reinicie o servidor."
+    );
+  }
+
+  const googleAuthUrl = new URL("https://accounts.google.com/o/oauth2/v2/auth");
+  googleAuthUrl.searchParams.set("client_id", clientId);
+  googleAuthUrl.searchParams.set("redirect_uri", redirectUri);
+  googleAuthUrl.searchParams.set("response_type", "code");
+  googleAuthUrl.searchParams.set("scope", "openid email profile");
+
+  window.location.href = googleAuthUrl.toString();
 }
 
 // ---------- Onboarding (RF-04) ----------
