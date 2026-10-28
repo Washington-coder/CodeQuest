@@ -67,8 +67,15 @@ export async function loginWithGoogle() {
 
 // ---------- Onboarding (RF-04) ----------
 
+const ONBOARDING_KEY = "codequest:onboarding-completed";
+
+export function hasCompletedOnboarding() {
+  return typeof window !== "undefined" && localStorage.getItem(ONBOARDING_KEY) === "1";
+}
+
 export async function savePreferences(preferences: OnboardingPreferences) {
   // TODO: substituir por PUT /users/me/preferences
+  localStorage.setItem(ONBOARDING_KEY, "1");
   return delay({ success: true, preferences });
 }
 

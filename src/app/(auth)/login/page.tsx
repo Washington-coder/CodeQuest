@@ -11,7 +11,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { GoogleIcon } from "@/components/shared/google-icon";
-import { loginWithEmail, loginWithGoogle } from "@/lib/api";
+import { hasCompletedOnboarding, loginWithEmail, loginWithGoogle } from "@/lib/api";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -24,13 +24,13 @@ export default function LoginPage() {
     e.preventDefault();
     setLoading("email");
     await loginWithEmail(email, password);
-    router.push("/practice");
+    router.push(hasCompletedOnboarding() ? "/practice" : "/onboarding");
   }
 
   async function handleGoogle() {
     setLoading("google");
     await loginWithGoogle();
-    router.push("/practice");
+    router.push(hasCompletedOnboarding() ? "/practice" : "/onboarding");
   }
 
   return (

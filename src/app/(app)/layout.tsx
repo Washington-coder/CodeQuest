@@ -1,5 +1,6 @@
 import { Sidebar } from "@/components/layout/sidebar";
 import { Navbar } from "@/components/layout/navbar";
+import { OnboardingGuard } from "@/components/onboarding/onboarding-guard";
 import { PageTransition } from "@/components/layout/page-transition";
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
@@ -10,7 +11,9 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         <Navbar />
         <main className="flex-1 px-4 py-6 sm:px-6 lg:px-8">
           <div className="mx-auto w-full max-w-6xl">
-            <PageTransition>{children}</PageTransition>
+            <OnboardingGuard>
+              <PageTransition>{children}</PageTransition>
+            </OnboardingGuard>
           </div>
         </main>
       </div>
