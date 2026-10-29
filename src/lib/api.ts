@@ -23,6 +23,7 @@ import type {
   QuestionMode,
   Quiz,
 } from "./types";
+import { onboardingPreferencesSchema } from "./schemas";
 
 const LATENCY_MS = 350;
 
@@ -40,7 +41,7 @@ export async function loginWithEmail(_email: string, _password: string) {
 export async function registerWithEmail(
   _name: string,
   _email: string,
-  _password: string
+  _password: string,
 ) {
   // TODO: substituir por POST /auth/register
   return delay({ user: currentUser, token: "mock-token" });
@@ -52,7 +53,7 @@ export async function loginWithGoogle() {
 
   if (!clientId || !redirectUri) {
     throw new Error(
-      "Configure NEXT_PUBLIC_GOOGLE_CLIENT_ID e NEXT_PUBLIC_GOOGLE_REDIRECT_URI no .env.local e reinicie o servidor."
+      "Configure NEXT_PUBLIC_GOOGLE_CLIENT_ID e NEXT_PUBLIC_GOOGLE_REDIRECT_URI no .env.local e reinicie o servidor.",
     );
   }
 
@@ -70,13 +71,17 @@ export async function loginWithGoogle() {
 const ONBOARDING_KEY = "codequest:onboarding-completed";
 
 export function hasCompletedOnboarding() {
-  return typeof window !== "undefined" && localStorage.getItem(ONBOARDING_KEY) === "1";
+  return (
+    typeof window !== "undefined" &&
+    localStorage.getItem(ONBOARDING_KEY) === "1"
+  );
 }
 
 export async function savePreferences(preferences: OnboardingPreferences) {
-  // TODO: substituir por PUT /users/me/preferences
+  const parsed = onboardingPreferencesSchema.parse(preferences);
+  // TODO: substituir o mock abaixo por apiClient.put("/users/me/preferences", parsed)
   localStorage.setItem(ONBOARDING_KEY, "1");
-  return delay({ success: true, preferences });
+  return delay({ success: true, preferences: parsed });
 }
 
 // ---------- Perguntas (RF-05, RF-06, RF-13) ----------
@@ -92,7 +97,9 @@ export async function getRandomQuestion(filters?: {
 }
 
 export async function getQuestionsByIds(ids: string[]): Promise<Question[]> {
-  return delay(ids.map((id) => questions.find((q) => q.id === id)!).filter(Boolean));
+  return delay(
+    ids.map((id) => questions.find((q) => q.id === id)!).filter(Boolean),
+  );
 }
 
 // ---------- Quizzes (RF-14, RF-15, RF-16) ----------
@@ -111,8 +118,9 @@ export async function createQuiz(input: CreateQuizInput): Promise<Quiz> {
   const pool = questions.filter(
     (q) =>
       q.difficulty === input.difficulty &&
-      (input.categories.length === 0 || input.categories.includes(q.category)) &&
-      (input.includeOpenEnded || q.type !== "open-ended")
+      (input.categories.length === 0 ||
+        input.categories.includes(q.category)) &&
+      (input.includeOpenEnded || q.type !== "open-ended"),
   );
   const selected = pool.slice(0, input.questionCount || pool.length);
   const quiz: Quiz = {

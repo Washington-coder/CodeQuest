@@ -26,12 +26,7 @@ export interface User {
   createdAt: string;
 }
 
-export interface OnboardingPreferences {
-  languages: string[];
-  frameworks: string[];
-  focus: ("frontend" | "backend" | "fullstack" | "data")[];
-  interfaceLanguage: "pt-BR" | "en-US" | "es-ES";
-}
+export type { OnboardingPreferences } from "./schemas";
 
 export type QuestionType = "multiple-choice" | "open-ended";
 
